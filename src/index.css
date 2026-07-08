@@ -1,0 +1,139 @@
+/* src/index.css */
+
+/* ============================================================
+   @import "tailwindcss"
+   
+   What this does: Activates the entire Tailwind framework.
+   In v3 you needed three separate lines:
+     @tailwind base;
+     @tailwind components;
+     @tailwind utilities;
+   In v4 this single import replaces all three. Cleaner.
+   ============================================================ */
+   @import "tailwindcss";
+
+   /* ============================================================
+      Google Fonts import
+      
+      What this does: Loads both Cravns fonts from Google's servers.
+      Outfit is the UI font used for all text in the app.
+      Urbanist is the logo/wordmark font only.
+      The :wght@ values load specific font weights we use —
+      400 (regular), 500 (medium), 600 (semibold), 700 (bold).
+      Only loading what you use keeps the app loading fast.
+      ============================================================ */
+   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Urbanist:wght@400;600;700&display=swap');
+   
+   /* ============================================================
+      @theme — Cravns Design System
+      
+      What @theme is: This is new in Tailwind v4. It's how you define
+      custom design tokens — your own colors, fonts, and values —
+      that Tailwind turns into utility classes you can use in JSX.
+      
+      Every variable defined here automatically creates corresponding
+      Tailwind classes. For example:
+      --color-forest: #1B6B4A creates bg-forest, text-forest, border-forest
+      --font-outfit: 'Outfit' creates font-outfit
+      
+      This replaces the entire tailwind.config.js from v3.
+      All your design decisions live here in one place.
+      ============================================================ */
+   @theme {
+   
+     /* --- Primary colors --- */
+   
+     --color-forest: #1B6B4A;
+     /* Forest green — the primary action color.
+        Used on: all primary buttons, active nav tab, logo on light surfaces,
+        selected states on tiles and cards. The color users tap. */
+   
+     --color-amber: #F5A623;
+     /* Amber — the accent and celebration color.
+        Used on: AI craving label, voting result banner button, streak badges,
+        "AI pick" pills, "Tonight's Craving" eyebrow label.
+        Never used on primary buttons — reserved for delight moments only. */
+   
+     --color-dark-forest: #0F2D1F;
+     /* Dark forest — the deep dark surface color.
+        Used on: onboarding screen background, login screen background,
+        household voting banner card, app icon background.
+        Warmer than pure black — maintains the food-app warmth even in dark contexts. */
+   
+     /* --- Backgrounds --- */
+   
+     --color-app-bg: #F0F7F4;
+     /* Mint white — the app background used on every light screen.
+        The faint green tint ties every screen to the palette before
+        any content loads. Never use pure white (#FFFFFF) as a screen background. */
+   
+     --color-card: #FFFFFF;
+     /* Pure white — used only for card surfaces that sit on top of app-bg.
+        The contrast between #FFFFFF cards and #F0F7F4 background
+        creates visual hierarchy without needing borders or shadows. */
+   
+     --color-pill: #E4F2EC;
+     /* Pill background — used for tag and chip backgrounds in the green family.
+        Also used for selected-state backgrounds on option cards and
+        as a subtle border color on cards. */
+   
+     --color-amber-bg: #FEF4E0;
+     /* Amber pill background — used behind amber-colored text tags
+        like "18 days overdue" and "House fave" in the amber family. */
+   
+     /* --- Text --- */
+   
+     --color-text-primary: #0F2D1F;
+     /* Primary text — used for all headings, screen titles, and main body text.
+        Same as dark-forest but referenced separately for semantic clarity.
+        Warmer than pure black — maintains warmth throughout the typography. */
+   
+     --color-text-secondary: #3D7A5E;
+     /* Secondary text — used for supporting copy, subheaders, reason lines,
+        and descriptive text beneath primary labels. A medium green-grey. */
+   
+     --color-text-hint: #8AB5A0;
+     /* Hint text — used for placeholder text in inputs, disabled states,
+        inactive nav labels, "Skip today" links, and any text that should
+        recede into the background without disappearing entirely. */
+   
+     --color-amber-text: #9a6800;
+     /* Amber text — used for text sitting on amber-bg pills.
+        Darker than the amber accent to ensure readable contrast. */
+   
+     /* --- Typography --- */
+   
+     --font-outfit: 'Outfit', sans-serif;
+     /* Outfit — the UI font for all text inside the app.
+        Creates font-outfit utility class used as: className="font-outfit"
+        Used on: every label, button, body text, nav item, and input. */
+   
+     --font-urbanist: 'Urbanist', sans-serif;
+     /* Urbanist — the logo and wordmark font only.
+        Creates font-urbanist utility class.
+        Used on: the "Cravns" wordmark in the app header and app icon only.
+        Never used for UI text — Outfit handles everything else. */
+   }
+   
+   /* ============================================================
+      Global base styles
+      
+      What this does: Sets defaults that apply to every element
+      in the app before any component-level styles are applied.
+      ============================================================ */
+   @layer base {
+     body {
+       font-family: 'Outfit', sans-serif;
+       /* Sets Outfit as the default font for the entire app.
+          Individual components can override this with font-urbanist
+          when needed (logo only). */
+   
+       background-color: #F0F7F4;
+       /* Sets the mint white background on the body element.
+          Means even areas outside component bounds have the right color. */
+   
+       margin: 0;
+       /* Removes the default 8px margin browsers add to the body.
+          Without this your app would have an unwanted white gap around the edges. */
+     }
+   }

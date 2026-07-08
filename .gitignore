@@ -1,0 +1,22 @@
+# node_modules — the downloaded packages folder
+# Always re-downloadable via npm install, never needs to be in GitHub
+# Can be 200MB+ — no reason to push it
+node_modules/
+
+# Environment files — NEVER push these to GitHub
+# These contain your API keys, database URLs, and passwords
+# Anyone with these values could access your database and rack up AI bills
+.env
+.env.local
+.env.development
+.env.production
+
+# Build output — generated automatically when you deploy
+# Not source code — Vercel generates this fresh on every deploy
+dist/
+
+# Mac system files — automatically created by macOS, not part of your project
+.DS_Store
+
+# VS Code settings — personal editor preferences, not project code
+.vscode/settings.json

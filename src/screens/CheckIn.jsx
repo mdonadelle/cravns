@@ -8,6 +8,8 @@
 // expandedOption tracks which option card is open showing
 // the cuisine tile grid below it. Only one expands at a time.
 
+import { useUser } from '../context/UserContext'
+import { useMeals } from '../hooks/useMeals'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CuisineTile from '../components/CuisineTile'
@@ -26,6 +28,9 @@ export default function CheckIn() {
   const [selectedOption, setSelectedOption] = useState('home') // pre-selected
   const [selectedCuisine, setSelectedCuisine] = useState('')
   const [customEntry, setCustomEntry] = useState('')
+  const { user } = useUser()
+  const { logMeal } = useMeals()
+  const [saving, setSaving] = useState(false)
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric'
@@ -147,12 +152,28 @@ export default function CheckIn() {
 
       {/* Bottom actions */}
       <div className="px-6 pb-10 pt-4">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="w-full h-[52px] bg-forest text-white rounded-xl font-outfit font-medium text-[15px] mb-3 active:opacity-80"
-        >
-          Done ✓
-        </button>
+      <button
+  onClick={async () => {
+    setSaving(true)
+
+    const { error } = await logMeal({
+      mealType: selectedOption,        // 'home', 'out', or 'both'
+      cuisine: selectedCuisine,        // e.g. 'Thai' or ''
+      customEntry: customEntry,        // free text entry
+      locationName: '',                // restaurant name — added later
+    })
+
+    setSaving(false)
+
+    if (!error) {
+      navigate('/dashboard')
+    }
+  }}
+  className="w-full h-[52px] bg-forest text-white rounded-xl font-outfit font-medium text-[15px] mb-3 active:opacity-80 disabled:opacity-60"
+  disabled={saving}
+>
+  {saving ? 'Saving...' : 'Done ✓'}
+</button>
         <p className="text-center text-[13px] font-outfit text-text-hint underline cursor-pointer">
           Skip today
         </p>

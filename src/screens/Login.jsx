@@ -9,6 +9,7 @@
 // This is called a "controlled input" — React owns the value,
 // not the browser. This lets us read and validate the input.
 
+import { useUser } from '../context/UserContext'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TextInput from '../components/TextInput'
@@ -20,11 +21,28 @@ export default function Login() {
   // Every keystroke updates these values via the onChange handlers
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const { signIn } = useUser()
+  const [error, setError] = useState('')
 
   // This will connect to Supabase auth in Phase 3
   // For now it just navigates to the dashboard to test the flow
-  const handleLogin = () => {
-    navigate('/dashboard')
+  const handleLogin = async () => {
+    // Basic validation before hitting the API
+    if (!email || !password) {
+      setError('Please enter your email and password')
+      return
+    }
+  
+    const { error: signInError } = await signIn(email, password)
+  
+    if (signInError) {
+      // Show the error from Supabase — e.g. "Invalid login credentials"
+      setError(signInError.message)
+      return
+    }
+  
+    // Login successful — App.jsx routing handles the redirect to /dashboard
+    // because user state changes, triggering a re-render with Navigate
   }
 
   return (
@@ -93,6 +111,10 @@ export default function Login() {
       >
         Log in
       </button>
+     
+      {error && (
+  <p className="text-center text-[12px] font-outfit text-red-400 mt-2">{error}</p>
+)}
 
       {/* Divider */}
       <div className="flex items-center gap-3 mb-4">

@@ -8,7 +8,7 @@
 // currentStep state controls which step is visible.
 // Incrementing it from 1 to 2 shows the second step.
 // This is called a multi-step form pattern — common in onboarding flows.
-
+import { useUser } from '../context/UserContext'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ProgressBar from '../components/ProgressBar'
@@ -20,6 +20,10 @@ export default function AccountSetup() {
   const [lastName, setLastName] = useState('')
   const [username, setUsername] = useState('')
   const [notifTime, setNotifTime] = useState('19:00')
+  const { signUp, updateProfile } = useUser()
+  const [error, setError] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   return (
     <div className="min-h-screen bg-app-bg flex flex-col">
@@ -58,6 +62,29 @@ export default function AccountSetup() {
               Add a photo
             </span>
           </div>
+          {/* Email */}
+<div>
+  <p className="text-[12px] font-medium font-outfit text-text-secondary mb-[6px]">Email</p>
+  <input
+    type="email"
+    placeholder="your@email.com"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    className="w-full h-[52px] bg-white border-[1.5px] border-pill rounded-xl px-4 font-outfit text-[14px] text-text-primary placeholder:text-text-hint outline-none focus:border-forest transition-colors"
+  />
+</div>
+
+{/* Password */}
+<div>
+  <p className="text-[12px] font-medium font-outfit text-text-secondary mb-[6px]">Password</p>
+  <input
+    type="password"
+    placeholder="Create a password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="w-full h-[52px] bg-white border-[1.5px] border-pill rounded-xl px-4 font-outfit text-[14px] text-text-primary placeholder:text-text-hint outline-none focus:border-forest transition-colors"
+  />
+</div>
 
           {/* Name fields */}
           <div className="space-y-3 mb-auto">
@@ -97,12 +124,39 @@ export default function AccountSetup() {
           </div>
 
           <div className="pb-10 pt-6">
-            <button
-              onClick={() => setCurrentStep(2)}
-              className="w-full h-[52px] bg-forest text-white rounded-xl font-outfit font-medium text-[15px] active:opacity-80"
-            >
-              Next →
-            </button>
+          <button
+  onClick={async () => {
+    // Validate fields before proceeding
+    if (!email || !password || !firstName) {
+      setError('Please fill in all fields')
+      return
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    // Create the account in Supabase
+    const { error: signUpError } = await signUp(email, password, firstName)
+
+    if (signUpError) {
+      setError(signUpError.message)
+      return
+    }
+
+    // Account created — move to step 2
+    setError('')
+    setCurrentStep(2)
+  }}
+  className="w-full h-[52px] bg-forest text-white rounded-xl font-outfit font-medium text-[15px] active:opacity-80"
+>
+  Next →
+</button>
+
+{/* Error message — only shows if there's an error */}
+{error && (
+  <p className="text-center text-[12px] font-outfit text-red-500 mt-2">{error}</p>
+)}
           </div>
         </div>
       )}
@@ -191,12 +245,25 @@ export default function AccountSetup() {
           </div>
 
           <div className="pb-10 pt-4">
-            <button
-              onClick={() => navigate('/setup/taste')}
-              className="w-full h-[52px] bg-forest text-white rounded-xl font-outfit font-medium text-[15px] mb-2 active:opacity-80"
-            >
-              Let's go 🎉
-            </button>
+          <button
+  onClick={async () => {
+    try {
+      await updateProfile({
+        first_name: firstName,
+        last_name: lastName,
+        username: username,
+        notification_time: notifTime,
+      })
+    } catch (e) {
+      // Don't block navigation if profile update fails
+      console.log('Profile update error:', e)
+    }
+    navigate('/setup/taste')
+  }}
+  className="w-full h-[52px] bg-forest text-white rounded-xl font-outfit font-medium text-[15px] mb-2 active:opacity-80"
+>
+  Let's go 🎉
+</button>
             <p className="text-center text-[11px] font-outfit text-text-hint">
               You can change these anytime in Settings
             </p>

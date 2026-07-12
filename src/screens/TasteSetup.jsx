@@ -8,6 +8,8 @@
 // selectedCuisines uses an array in state — each tap adds or removes
 // a cuisine from the array. This is called a toggle pattern.
 
+import { useUser } from '../context/UserContext'
+import { supabase } from '../lib/supabase'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ProgressBar from '../components/ProgressBar'
@@ -34,6 +36,8 @@ export default function TasteSetup() {
   const [eatingStyle, setEatingStyle] = useState('')
   const [cookFrequency, setCookFrequency] = useState(3)
   const [householdType, setHouseholdType] = useState('')
+
+  const { user } = useUser()
 
   // Toggle a cuisine on/off in the selectedCuisines array
   // If it's already in the array, remove it. If not, add it.
@@ -205,15 +209,32 @@ export default function TasteSetup() {
 
           <div className="pb-10 pt-4">
             <button
-              onClick={() => navigate('/dashboard')}
-              className={`w-full h-[52px] rounded-xl font-outfit font-medium text-[15px] transition-colors ${
-                householdType
-                  ? 'bg-forest text-white'
-                  : 'bg-pill text-text-hint'
-              }`}
-            >
-              {householdType === 'household' ? 'Set up household →' : householdType === 'solo' ? 'Take me to Cravns →' : 'Choose an option'}
-            </button>
+  onClick={async () => {
+    if (!householdType) return
+
+    // Save taste preferences to Supabase
+    await supabase
+      .from('taste_preferences')
+      .upsert({
+        user_id: user.id,
+        cuisines: selectedCuisines,
+        cooking_frequency: cookFrequency,
+        eating_style: eatingStyle,
+      })
+
+    navigate('/dashboard')
+  }}
+  className={`w-full h-[52px] rounded-xl font-outfit font-medium text-[15px] transition-colors ${
+    householdType ? 'bg-forest text-white' : 'bg-pill text-text-hint'
+  }`}
+>
+  {householdType === 'household'
+    ? 'Set up household →'
+    : householdType === 'solo'
+      ? 'Take me to Cravns →'
+      : 'Choose an option'
+  }
+</button>
           </div>
         </div>
       )}
